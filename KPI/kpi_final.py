@@ -1,0 +1,97 @@
+import sys
+import requests
+import oracledb 
+
+from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5 import uic
+from PyQt5.QtWidgets import QLabel, QPushButton, QWidget, QApplication, QLineEdit
+
+from datetime import datetime
+
+form_class = uic.loadUiType("main.ui")[0]
+      
+class MyWindow(QMainWindow, form_class):
+    def __init__(self):
+        super().__init__()
+
+        self.setupUi(self)
+        
+        #self.label_T.setText('Label Test 완료했슴')
+        #self.lineEdit_S.setText('생산량') 
+        current_datetime = datetime.now()
+
+        formatted_date = current_datetime.strftime("%Y%m%d")
+        self.lineEdit_YYYYMMDD.setText(formatted_date) 
+       
+        YYYYMMDD = self.lineEdit_YYYYMMDD.text()
+        #print(YYYYMMDD)
+       
+        formatted_datetime = current_datetime.strftime("%Y%m%d%H%M%S")
+        HHMMSS = self.lineEdit_HHMMSS.setText(formatted_datetime) 
+        
+        oracledb.init_oracle_client()
+        con = oracledb.connect(user="PRITEC", password="PRITEC", dsn="202.68.233.246:1521/orcl")   # DB에 연결 (호스트이름 대신 IP주소 가능)
+        cursor = con.cursor()   # 연결된 DB 지시자(커서) 생성
+        #print('데이터베이스 연결 성공~!!!')
+
+        cursor.execute(" Select RM_QTY from SOR0TB066 where WCAL_DTE = '"+YYYYMMDD+"' ")       # DB 명령 실행 (cursor가 임시 보관)
+        
+        out_data = cursor.fetchall()   # cursor가 임시 보관한 내용을 out_data에 저장 (결과는 리스트)
+        out_data #내용 출력해보기
+        for rows in out_data :
+          #print("=====>", out_data[0]) 
+          rm_qty = rows[0]
+          #print("---->", rows[0]) 
+          self.lineEdit_RM_QTY.setText(str(rm_qty))
+        
+        con.close() 
+
+        json_YYYYMMDD = self.lineEdit_YYYYMMDD.text()
+        json_HHMMSS   = self.lineEdit_HHMMSS.setText(formatted_datetime) 
+
+        url = 'http://www.ssf-kpi.kr:8080/kpiLv1/kpiLv1InsertTst'
+        data ={
+             "KPILEVEL1" :
+           [
+           {"kpiCertKey": "e169-aaf0-3b11-05ef","ocrDttm": " '"+json_YYYYMMDD+"' "   , 
+             "systmOprYn": "Y", 
+             "trsDttm": "  '"+json_YYYYMMDD+"' "}
+           ]
+              }
+        
+        json_RM_QTY  = self.lineEdit_RM_QTY.text()
+        #json_REJ_QTY = self.lineEdit_RM_QTY.setText(str(rm_qty))
+        
+        
+        http_post_request = requests.post(url,json=data)
+        print(http_post_request.text)
+        print(http_post_request.status_code)
+
+        url = 'http://www.ssf-kpi.kr:8080/kpiLv2/kpiLv2InsertTst'
+
+        data ={
+              "KPILEVEL2" :
+          [
+          {"kpiCertKey": "e169-aaf0-3b11-05ef", "ocrDttm": "'"+json_YYYYMMDD+"'", 
+           "kpiFldCd": "P", "kpiDtlCd": "B", "kpiDtlNm": " 생산량 증가", 
+           "achrt": json_RM_QTY, "trsDttm": " '"+json_YYYYMMDD+"' "},
+          {"kpiCertKey": "e169-aaf0-3b11-05ef", "ocrDttm": "'"+json_YYYYMMDD+"'", 
+           "kpiFldCd": "Q", "kpiDtlCd": "B", "kpiDtlNm": "불량률감소", 
+           "achrt": "51", "trsDttm": "'"+json_YYYYMMDD+"' "}
+          ]
+              }
+        http_post_request = requests.post(url,json=data)
+        print(http_post_request.text)
+        print(http_post_request.status_code)
+        
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    
+    myWindow = MyWindow()
+ 
+    myWindow.show()
+    app.exec_()
+
+  
+   
+   

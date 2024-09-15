@@ -1,0 +1,63 @@
+
+//레벨1 라이브
+http://www.ssf-kpi.kr:8080/kpiLv1/kpiLv1Insert
+{
+     "KPILEVEL1" :
+     [
+        {
+                "kpiCertKey": "e169-aaf0-3b11-05ef",
+                "ocrDttm": "20240219", 
+                "systmOprYn": "Y", 
+                "trsDttm": "20240219180020"
+        }
+     ]
+}
+
+ 
+//레벨2 라이브
+http://www.ssf-kpi.kr:8080/kpiLv2/kpiLv2Insert
+
+{
+        "KPILEVEL2" :
+                [
+                        {
+                                "kpiCertKey": "e169-aaf0-3b11-05ef", 
+                                "ocrDttm": "20240219", 
+                                "kpiFldCd": "P",                -> 고정값
+                                "kpiDtlCd": "B",                -> 고정값
+                                "kpiDtlNm": " 생산량 증가",      -> 고정값
+                                "achrt": "90",                  -> 변화량
+                                "trsDttm": "20240219180040"
+                        },
+
+                        {
+                                "kpiCertKey": "e169-aaf0-3b11-05ef", 
+                                "ocrDttm": "20240219", 
+                                "kpiFldCd": "Q",                 -> 고정값
+                                "kpiDtlCd": "B",                 -> 고정값
+                                "kpiDtlNm": "불량률감소",         -> 고정값 
+                                "achrt": "51",                   -> 변화량
+                                "trsDttm": "20240219180040"
+                        }
+                ]
+}
+
+//레벨3 라이브
+http://www.ssf-kpi.kr:8080/kpiLv3/kpiLv3Insert
+
+{
+"KPILEVEL3" :
+[
+{"kpiCertKey": "e169-aaf0-3b11-05ef", "ocrDttm": "20240219", 
+ "kpiFldCd": "P", "kpiDtlCd": "B", "kpiDtlNm": " 생산량 증가", 
+ "msmtVl": "914","unt": "EA", "trsDttm": "20240219180042"},
+{"kpiCertKey": "e169-aaf0-3b11-05ef", "ocrDttm": "20240219", 
+ "kpiFldCd": "Q", "kpiDtlCd": "B", "kpiDtlNm": "불량률감소", 
+ "msmtVl": "0.98","unt": "%", "trsDttm": "20240219180042"}
+]
+}
+
+ 
+//사업자번호
+206-86-64208
+
