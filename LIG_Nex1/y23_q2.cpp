@@ -26,23 +26,64 @@
 
 #include<iostream>
 #include<vector>
+#include<stack>
 
 using namespace std;
 
-//발상 : 그냥 1초부터 최대 초로 늘리면?
-//그 이상은 무조건 안 되니까, 초과니까
+// 1. 인터럽트인지 체크, 인터럽트면 넣기
+// 2. answer 주기까지 싹 다 넣기, 주기 도달하면 새로운 stack 만들어주기
+// 3. 이후 모든 stack size 체크, 주어진 최대 크기 제한보다 모두 작으면 주어진 answer 반환
+
 
 int getMaxTerm(const vector<int> interrupt, int max_interrupt)
 {
-    int answer = 1;
-    bool isErr = false;
-    int max_time = interrupt[interrupt.size()-1];
-    while(!isErr)
+    int answer = interrupt[interrupt.size()-1]+1;
+    int max_Time = answer;
+    vector<stack<int>> cycle; stack<int> start; cycle.push_back(start);
+    int cy_idx = 0;
+    for(int i=0; i<=max_Time; ++i)
     {
-        
+        if((i % answer == 0) && (i!=0))
+        {
+            // cout<<"answer is now "<<answer<<'\n';
+            cycle.push_back(start);
+            ++cy_idx;
+        }
+        for(int j=0; j<interrupt.size(); ++j)
+        {
+            if(i < interrupt[j])
+            {
+                break;
+            }
+            else if(i == interrupt[j])
+            {
+                // cout<<"in Cycle "<< cy_idx <<", push "<<i<<'\n';
+                cycle[cy_idx].push(i);
+            }
+        }
+        if(i==max_Time)
+        {
+            int temp_size = cycle.size();
+            for(int j=0; j<temp_size; ++j)
+            {
+                // cout<<"Cycle "<<j<<" size is "<<cycle[j].size()<<'\n';
+                if(cycle[j].size() > max_interrupt)
+                {
+                    // cout<<"Cycle "<<j<< "'s size is Over by "<<cycle[j].size() - max_interrupt<<'\n';
+                    cycle.clear();
+                    cycle.push_back(start);
+                    cy_idx=0;
+                    --answer;
+                    i=0;
+                    break;
+                }
+            }
+        }
     }
+
     return answer;
 }
+
 
 int main()
 {
