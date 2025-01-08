@@ -1,4 +1,4 @@
-#define INT_MAX 1e9
+#define MAX_INT 1e9
 #include <vector>
 #include <queue>
 #include <iostream>
@@ -19,11 +19,12 @@ int solution(vector<vector<int>> maps, int max_zero_pass) {
 
     // 3차원 visited 배열: visited[y][x][k] (k는 통과한 0의 횟수)
     // vector<vector<vector<bool>>> visited(n, vector<vector<bool>>(m, vector<bool>(max_zero_pass + 1, false)));
-    vector<vector<vector<int>>> visited(n, vector<vector<int>>(m, vector<int>(max_zero_pass + 1, INT_MAX)));
-
+    vector<vector<vector<int>>> visited(n, vector<vector<int>>(m, vector<int>(max_zero_pass + 1, MAX_INT)));
+    
     queue<State> q;
     q.push({0, 0, 0, 1}); // 시작점 (0, 0)에서 시작, 0을 통과한 횟수 0, 거리 1
-    visited[0][0][0] = true;
+    
+    visited[0][0][0] = 1;
 
     while (!q.empty()) {
         State cur = q.front();
@@ -55,6 +56,7 @@ int solution(vector<vector<int>> maps, int max_zero_pass) {
                 // }
                 // 탐색할 때, 현재 위치에 도달하는 거리가 기존보다 작으면 갱신
                 if (next_used <= max_zero_pass && cur.dist + 1 < visited[newY][newX][next_used]) {
+                    cout<<"[x,y] = ["<<newX<<','<<newY<<"] // before visited : "<<visited[newY][newX][next_used]<< " and It would be "<<cur.dist + 1<<'\n';
                     visited[newY][newX][next_used] = cur.dist + 1;
                     q.push({newY, newX, next_used, cur.dist + 1});
                 }
