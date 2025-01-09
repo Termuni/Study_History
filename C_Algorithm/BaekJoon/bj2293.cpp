@@ -73,8 +73,12 @@ nn
 
 -> 약 50분 걸려서 도출해낸 방법
 
-*/
+다른 사람 풀이
+https://yabmoons.tistory.com/491
 
+
+*/
+/*
 #include<iostream>
 
 using namespace std;
@@ -141,4 +145,44 @@ int main()
     }//전체 While
 
     cout<<answer<<endl;
+}
+*/
+
+#include<iostream>
+
+using namespace std;
+
+int nums[100010];
+int n, k;
+
+int main()
+{
+    //INIT
+    nums[0] = 1;
+    for(int i=1; i<100010; ++i)
+    {
+        nums[i] = 0;
+    }
+
+    //INPUT
+    cin >> n >> k;
+
+    for(int i=0; i<n; ++i)
+    {
+        int coin;
+        cin>>coin;
+        nums[coin] += 1;
+        for(int j = coin + 1; j <= k; ++j)
+        {
+            nums[j] = nums[j] + nums[j-coin];
+        }
+    }
+
+    
+    for(int i=0; i<=k; ++i)
+    {
+        cout << i << "th : " << nums[i] << endl;
+    }
+
+    return 0;
 }
