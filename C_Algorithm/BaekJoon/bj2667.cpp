@@ -57,27 +57,97 @@ IDEA
 해당 자리에서 인근 자리 검색했을 때 만약 있으면? 그 자리에서 다시 우/하/좌/상 검색
 
 시간복잡도 아마 n^4? 정도 아닐까?
+계산 해보면 약 39만 계산으로 나온다
 
+그렇다면 어떻게 갯수를 카운팅하지?
+
+함수를 만들고, 포인터로 현재 숫자를 넘겨서 가능한 경우마다 더해주기
+그리고 아파트 갯수에 넣어주기
 */
-#include <stdio.h>
+
 #include <iostream>
 #include <vector>
+#include <string>
+#include <algorithm>
 
 using namespace std;
 
-enum direction{
-    DOWN,
-    UP,
-    RIGHT,
-    LEFT
-};
+int n;
 
+//Number of Aparts Counter
 vector<int> apart;
 
+//is that apart visited?
+vector<vector<bool> > visited;
+
+// Direction,Down/Up/Right/Left
 int dy[4] = {1, -1, 0, 0};
 int dx[4] = {0, 0, 1, -1};
 
+void Count(int * count, int x, int y)
+{
+    //내 위치의 visited가 false면 return
+    if(!visited[y][x]) return;
+
+    //true면 카운트 추가하고 false로 만들어주기(다신 방문 안 하게)
+    *count += 1;
+    visited[y][x] = false;
+
+    //상/하/좌/우 탐색
+    for(int i=0; i<4; ++i)
+    {
+        if (x + dx[i] >= 0 && x + dx[i] < n && y + dy[i] >= 0 && y + dy[i] < n)
+        {
+            int newX = x + dx[i], newY = y + dy[i];
+            if(visited[newY][newX])
+            {
+                Count(count, newX, newY);
+            }
+        }
+    }
+}
+
 int main()
 {
-    cout<<"Bug Fixed.\n";
+    cin >> n;
+
+    // Save Data of 2x2 Apart, pair is [isThereApart] and position of vector
+    visited.resize(n, vector<bool>(n, false));
+
+    for (int i = 0; i < n; ++i)
+    {
+            //bool로 0110100 들어오면 이걸 그냥 true로 받아버리기에
+            //string으로 받은 뒤 char 단위로 쪼갤 예정
+            string isThereApart;
+            cin >> isThereApart;
+            for(int j = 0; j < n; ++j)
+            {
+                //3항 연산자로, char == '1' 인 경우만 true 넣어주기
+                visited[j][i] = (isThereApart[j] == '1')? true : false;
+            }
+    }
+    
+    //생각 할 수록 깊이 탐색이 맞음!
+    //count, posY, posX 등 넘겨서 진행하기
+    for(int y = 0; y < n; ++y)
+    {
+        for(int x = 0; x < n; ++x)
+        {
+            int count = 0;
+            Count(&count, x, y);
+            if(count != 0)
+            {
+                apart.push_back(count);
+            }
+        }
+    }
+    
+    //오름차순 정렬
+    sort(apart.begin(), apart.end());
+
+    cout<<apart.size()<<'\n';
+    for(int i = 0; i < apart.size(); ++i)
+    {
+        cout<<apart[i]<<'\n';
+    }
 }
