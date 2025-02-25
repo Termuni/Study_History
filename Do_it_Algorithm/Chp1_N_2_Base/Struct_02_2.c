@@ -8,7 +8,7 @@ typedef struct{
 } PhysCheck;
 
 //키 평균값 구하는 함수
-double Avg_Height(const PhysCheck * dat, int n)
+double Avg_Height(const PhysCheck dat[], int n)
 {
     double sum = 0;
     for(int i=0; i<n; ++i)
@@ -19,7 +19,7 @@ double Avg_Height(const PhysCheck * dat, int n)
 }
 
 //시력 분포
-void Dist_Vision(const PhysCheck * dat, int n, int * dist)
+void Dist_Vision(const PhysCheck dat[], int n, int dist[])
 {
     //dist의 분포 초기화
     for(int i=0; i<VMAX; ++i)
