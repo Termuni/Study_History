@@ -113,18 +113,19 @@ unsigned long long으로 저장하고, 특정 함수를 만들어서 자릿수에 계속 저장하기
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
-unsigned int d[2000];
+unsigned long long d[2000];
 int count = 0; // 감소하는 수의 개수
 
 // 감소하는 수를 재귀적으로 생성하는 함수
-void Generate_Decreasing(long long num, int last_digit)
+void Generate_Decreasing(unsigned long long num, int last_digit)
 {
     d[count++] = num; // 현재 숫자를 배열에 저장
 
     for (int i = 0; i < last_digit; i++)
     { // 마지막 자리보다 작은 숫자만 붙이기
-        Generate_Decreasing(num * 10 + i, i);
+        Generate_Decreasing(num * (unsigned long long)10 + (unsigned long long)i, i);
     }
 }
 
@@ -136,22 +137,34 @@ void Create_Decreasing_Numbers()
         Generate_Decreasing(i, i);
     }
 }
+
+// 숫자 정렬을 위한 비교 함수 (qsort에 사용)
+int compare(const void *a, const void *b)
+{
+    long long num1 = *(long long *)a;
+    long long num2 = *(long long *)b;
+    return (num1 > num2) - (num1 < num2);
+}
+
 int main()
 {
-    //INITIALIZE
-    int inp;
+    int n;
 
-    //FILLING
-    Create_Decreasing_Numbers();
+    Create_Decreasing_Numbers();                                  // 감소하는 수를 생성
+    qsort(d, count, sizeof(long long), compare); // 정렬
 
-    // INPUT
-    scanf("%d", &inp);
-    if(inp >= count)
+    for(int i=0; i<1024; ++i)
     {
-        puts("-1");
+        printf("%d\t\t",d[i]);
+        if(i%10==0) puts("");
     }
+
+    scanf("%d", &n);
+
+    if (n >= count)
+        printf("-1\n"); // N번째 감소하는 수가 없으면 -1 출력
     else
-    {
-        printf("%d\n", d[inp]);
-    }
+        printf("%lld\n", d[n]); // N번째 감소하는 수 출력
+
+    return 0;
 }
