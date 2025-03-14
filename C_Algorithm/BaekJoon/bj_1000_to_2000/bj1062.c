@@ -1,4 +1,5 @@
 /*
+https://www.acmicpc.net/problem/1062
 문제
 남극에 사는 김지민 선생님은 학생들이 되도록이면 많은 단어를 읽을 수 있도록 하려고 한다.
 그러나 지구온난화로 인해 얼음이 녹아서 곧 학교가 무너지기 때문에, 김지민은 K개의 글자를 가르칠 시간 밖에 없다.
@@ -75,10 +76,9 @@ char[360000][26] 으로 정의한 뒤, 각 조합을 만들어둔다
 
 그 다음 그 조합에 따라 N개 단어를 비교한다.
 
-~~~~~ 근데?!!?!! 이 아이디어를 가지고 GPT한테 물어보니, 더 좋은 방법을 추천받았다!
-그것은 바로 비트마스크(Bit-Mask) 방식
-어차피 int = 32bit 니까, 이걸 a~z까지 표현하는 것으로 대체 가능
+너무 비효율적이니, 다른 방법을 생각하는 것이 좋아보임
 
+단어를 저장하고, 단어들에 대해서 조합을 통해 카운팅한다
 */
 #include <stdio.h>
 #include <string.h>
@@ -91,43 +91,43 @@ char words[MAX_N][16]; // 단어 저장 (최대 길이 15)
 int learned[ALPHA];    // 배운 글자 여부 (1: 배움, 0: 안 배움)
 
 // 주어진 글자로 읽을 수 있는 단어 개수 계산
-int count_readable_words()
+int Count_Readable_Words()
 {
     int count = 0;
-    for (int i = 0; i < N; i++)
+    //이중 포문으로, learned를 점검하며 해당하는 알파벳이 지금 이 word에 있는지 없는지를 점검
+    for(int i=0; i<N; ++i)
     {
-        int readable = 1;
-        for (int j = 0; words[i][j] != '\0'; j++)
+        int able = 1;
+        for(int j=0; j<strlen(words[i]); ++j)
         {
-            if (!learned[words[i][j] - 'a'])
+            if (learned[words[i][j] - 'a'] == 0)
             {
-                readable = 0;
+                able = 0;
                 break;
             }
         }
-        if (readable)
-            count++;
+        if(able == 1) count++;
     }
     return count;
 }
 
 // 백트래킹으로 조합을 찾으며 최대 단어 수 탐색
-void dfs(int index, int selected)
+void DFS(int index, int selected)
 {
-    if (selected == K - 5)
-    { // K-5개를 다 선택한 경우
-        int count = count_readable_words();
-        if (count > max_count)
-            max_count = count;
+    //종료 조건을 점검, selected 갯수가 최대 배울 수 있는 단어 갯수와 동일하면 멈춤
+    if(selected == K-5)
+    {
+        int count = Count_Readable_Words();
+        max_count = (max_count > count) ? max_count : count;
         return;
     }
-
-    for (int i = index; i < ALPHA; i++)
+    //DFS를 계속 진행시키는 재귀함수 영역
+    for(int i=index; i<ALPHA; ++i)
     {
-        if (!learned[i])
+        if(learned[i] == 0)
         {
             learned[i] = 1;
-            dfs(i + 1, selected + 1);
+            DFS(i + 1, selected + 1);
             learned[i] = 0;
         }
     }
@@ -154,12 +154,12 @@ int main()
     for (int i = 0; i < N; i++)
     {
         scanf("%s", words[i]);
-        memmove(words[i], words[i] + 4, strlen(words[i]) - 8);
+        memmove(words[i], words[i]+4, strlen(words[i]));
         words[i][strlen(words[i]) - 4] = '\0';
     }
 
     // 백트래킹 시작
-    dfs(0, 0);
+    DFS(0, 0);
 
     // 결과 출력
     printf("%d\n", max_count);
