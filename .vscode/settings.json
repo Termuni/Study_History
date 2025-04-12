@@ -3,6 +3,7 @@
         "vector": "cpp",
         "iostream": "cpp",
         "cstdlib": "cpp",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "ratio": "c"
     }
 }
